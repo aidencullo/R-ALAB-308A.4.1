@@ -25,25 +25,29 @@ const API_KEY = "live_85IigfDFRAJz3RZl3AHEGeioejA1FeoZe5RpLo7Si7yYzbLATq0UWuocM3
 const initialLoad = async () => {
   // Create URL and search parameters
   const baseUrl = 'https://api.thecatapi.com/v1/breeds';
-  const params = new URLSearchParams({
-    api_key: 'live_85IigfDFRAJz3RZl3AHEGeioejA1FeoZe5RpLo7Si7yYzbLATq0UWuocM3qAqRJC',  // API key as a query parameter
-  });
+  const headers = {
+    'Content-Type': 'application/json',
+    'x-api-key': API_KEY,
+  };
 
-  // Deconstructing everything into the options object
   const options = {
     method: 'GET',  // HTTP method
-    headers: {
-      'Content-Type': 'application/json',  // Optional header
-    },
+    headers: headers,  // Request headers
   };
 
   // Combine the base URL with search parameters
-  const urlWithParams = `${baseUrl}?${params.toString()}`;
+  const urlWithParams = `${baseUrl}`;
 
   // Use fetch with the deconstructed options
   fetch(urlWithParams, options)
     .then(response => response.json())
-    .then(data => console.log(data))
+    .then(data => {
+      data.forEach((datum) =>{
+	const breedOption = document.createElement('option');
+	breedOption.textContent = datum.name;
+	breedSelect.appendChild(breedOption);
+      })
+    })
     .catch(error => console.error('Error:', error));
 }
 
