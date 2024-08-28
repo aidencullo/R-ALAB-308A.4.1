@@ -22,18 +22,17 @@ const API_KEY = "live_85IigfDFRAJz3RZl3AHEGeioejA1FeoZe5RpLo7Si7yYzbLATq0UWuocM3
  * This function should execute immediately.
  */
 
-const fetchWrapper = async (url, options = {}) => {
+const fetchWrapper = async (url, params = {}) => {
   try {
+    const urlWithParams = `${url}?${params}`
     const headers = {
       'Content-Type': 'application/json',
       'x-api-key': API_KEY,
     };
-
     const options = {
       headers: headers,  // Request headers
     };
-
-    const response = await fetch(url, options);
+    const response = await fetch(urlWithParams, options);
     const data = await response.json();
     return data;
   } catch (error) {
@@ -46,8 +45,7 @@ const initialLoad = async () => {
   const params = new URLSearchParams({
     limit: 2,
   });
-  const urlWithParams = `${baseUrl}?${params}`;
-  const data = await fetchWrapper(urlWithParams);
+  const data = await fetchWrapper(baseUrl, params);
   data.forEach((datum) => {
     createBreedOption(datum);
   })
@@ -84,8 +82,7 @@ const handleBreedClick = async (e) => {
     limit: 2,
     breed_ids: breed,
   });
-  const url = `${baseUrl}?${params}`;
-  const data = await fetchWrapper(url);
+  const data = await fetchWrapper(baseUrl, params);
   data.forEach((datum) =>{
     console.log(datum);
   })
