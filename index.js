@@ -84,45 +84,13 @@ const handleBreedClick = async (e) => {
   });
   const data = await fetchWrapper(baseUrl, params);
   data.forEach((datum) =>{
-    console.log(datum);
+    console.log(datum)
+    const carouselItem = Carousel.createCarouselItem(datum.url, 'alt placeholder', datum.id);
+    Carousel.appendCarousel(carouselItem);
   })
 }
 
 breedSelect.addEventListener('change', handleBreedClick);
-
-// breedSelect.addEventListener('click', (e) => {
-//   console.log(e.target.value);
-//   const breed = e.target.value;
-
-//   const baseUrl = 'https://api.thecatapi.com/v1/breeds';
-//   const headers = {
-//     'Content-Type': 'application/json',
-//     'x-api-key': API_KEY,
-//   };
-
-//   const options = {
-//     method: 'GET',  // HTTP method
-//     headers: headers,  // Request headers
-//   };
-
-//   const params = new URLSearchParams({
-//     breed_id: 3,
-//   });
-
-//   // Combine the base URL with search parameters
-//   const urlWithParams = `${baseUrl}?${params}`;
-
-//   // Use fetch with the deconstructed options
-//   fetch(urlWithParams, options)
-//     .then(response => response.json())
-//     .then(data => {
-//       data.forEach((datum) =>{
-// 	console.log(datum);
-//       })
-//     })
-//     .catch(error => console.error('Error:', error));
-// })
-
 
 /**
  * 3. Fork your own sandbox, creating a new one named "JavaScript Axios Lab."
