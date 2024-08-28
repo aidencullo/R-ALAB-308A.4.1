@@ -22,48 +22,45 @@ const API_KEY = "live_85IigfDFRAJz3RZl3AHEGeioejA1FeoZe5RpLo7Si7yYzbLATq0UWuocM3
  * This function should execute immediately.
  */
 
-const initialLoad = async () => {
-  // Create URL and search parameters
-  const baseUrl = 'https://api.thecatapi.com/v1/breeds';
-  const headers = {
-    'Content-Type': 'application/json',
-    'x-api-key': API_KEY,
-  };
+const fetchWrapper = async (url, options = {}) => {
+  try {
+    const headers = {
+      'Content-Type': 'application/json',
+      'x-api-key': API_KEY,
+    };
 
-  const options = {
-    method: 'GET',  // HTTP method
-    headers: headers,  // Request headers
-    limit: 1,
-  };
+    const options = {
+      headers: headers,  // Request headers
+    };
 
-  // Combine the base URL with search parameters
-  const urlWithParams = `${baseUrl}`;
-
-  // Use fetch with the deconstructed options
-  fetch(urlWithParams, options)
-    .then(response => response.json())
-    .then(data => {
-      data.forEach((datum) =>{
-	console.log(datum);
-	const breedOption = document.createElement('option');
-	breedOption.value = datum.id;
-	breedOption.textContent = datum.name;
-	breedSelect.appendChild(breedOption);
-      })
-    })
-    .catch(error => console.error('Error:', error));
+    const response = await fetch(url, options);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error:', error);
+  }
 }
 
+const initialLoad = async () => {
+  const baseUrl = 'https://api.thecatapi.com/v1/breeds';
+  const params = new URLSearchParams({
+    limit: 2,
+  });
+  const urlWithParams = `${baseUrl}?${params}`;
+  const data = await fetchWrapper(urlWithParams);
+  data.forEach((datum) => {
+    createBreedOption(datum);
+  })
+}
 
-const fakeInitialLoad = () => {
-  console.log('fakeInitialLoad');
+const createBreedOption = (datum) => {
   const breedOption = document.createElement('option');
-  breedOption.textContent = "Abyssinian";
+  breedOption.value = datum.id;
+  breedOption.textContent = datum.name;
   breedSelect.appendChild(breedOption);
 }
 
 initialLoad();
-// fakeInitialLoad();
 
 /**
  * 2. Create an event handler for breedSelect that does the following:
@@ -80,37 +77,18 @@ initialLoad();
  * - Add a call to this function to the end of your initialLoad function above to create the initial carousel.
  */
 
-function handleBreedClick(e) {
+const handleBreedClick = async (e) => {
   const breed = e.target.value;
-
   const baseUrl = 'https://api.thecatapi.com/v1/images/search';
-  
-  const headers = {
-    'Content-Type': 'application/json',
-    'x-api-key': API_KEY,
-  };
-
-  const options = {
-    method: 'GET',  // HTTP method
-    headers: headers,  // Request headers
-    breed_ids: breed,
-  };
-
   const params = new URLSearchParams({
-		limit: 2,
+    limit: 2,
+    breed_ids: breed,
   });
-
   const url = `${baseUrl}?${params}`;
-
-  fetch(url, options)
-    .then(response => response.json())
-    .then(data => {
-      data.forEach((datum) =>{
-	console.log(datum);
-      })
-    })
-    .catch(error => console.error('Error:', error));
-
+  const data = await fetchWrapper(url);
+  data.forEach((datum) =>{
+    console.log(datum);
+  })
 }
 
 breedSelect.addEventListener('change', handleBreedClick);
