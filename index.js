@@ -33,6 +33,7 @@ const initialLoad = async () => {
   const options = {
     method: 'GET',  // HTTP method
     headers: headers,  // Request headers
+    limit: 1,
   };
 
   // Combine the base URL with search parameters
@@ -43,7 +44,9 @@ const initialLoad = async () => {
     .then(response => response.json())
     .then(data => {
       data.forEach((datum) =>{
+	console.log(datum);
 	const breedOption = document.createElement('option');
+	breedOption.value = datum.id;
 	breedOption.textContent = datum.name;
 	breedSelect.appendChild(breedOption);
       })
@@ -51,7 +54,16 @@ const initialLoad = async () => {
     .catch(error => console.error('Error:', error));
 }
 
+
+const fakeInitialLoad = () => {
+  console.log('fakeInitialLoad');
+  const breedOption = document.createElement('option');
+  breedOption.textContent = "Abyssinian";
+  breedSelect.appendChild(breedOption);
+}
+
 initialLoad();
+// fakeInitialLoad();
 
 /**
  * 2. Create an event handler for breedSelect that does the following:
@@ -67,6 +79,75 @@ initialLoad();
  * - Each new selection should clear, re-populate, and restart the Carousel.
  * - Add a call to this function to the end of your initialLoad function above to create the initial carousel.
  */
+
+function handleBreedClick(e) {
+  const breed = e.target.value;
+
+  const baseUrl = 'https://api.thecatapi.com/v1/images/search';
+  
+  const headers = {
+    'Content-Type': 'application/json',
+    'x-api-key': API_KEY,
+  };
+
+  const options = {
+    method: 'GET',  // HTTP method
+    headers: headers,  // Request headers
+    breed_ids: breed,
+  };
+
+  const params = new URLSearchParams({
+		limit: 2,
+  });
+
+  const url = `${baseUrl}?${params}`;
+
+  fetch(url, options)
+    .then(response => response.json())
+    .then(data => {
+      data.forEach((datum) =>{
+	console.log(datum);
+      })
+    })
+    .catch(error => console.error('Error:', error));
+
+}
+
+breedSelect.addEventListener('change', handleBreedClick);
+
+// breedSelect.addEventListener('click', (e) => {
+//   console.log(e.target.value);
+//   const breed = e.target.value;
+
+//   const baseUrl = 'https://api.thecatapi.com/v1/breeds';
+//   const headers = {
+//     'Content-Type': 'application/json',
+//     'x-api-key': API_KEY,
+//   };
+
+//   const options = {
+//     method: 'GET',  // HTTP method
+//     headers: headers,  // Request headers
+//   };
+
+//   const params = new URLSearchParams({
+//     breed_id: 3,
+//   });
+
+//   // Combine the base URL with search parameters
+//   const urlWithParams = `${baseUrl}?${params}`;
+
+//   // Use fetch with the deconstructed options
+//   fetch(urlWithParams, options)
+//     .then(response => response.json())
+//     .then(data => {
+//       data.forEach((datum) =>{
+// 	console.log(datum);
+//       })
+//     })
+//     .catch(error => console.error('Error:', error));
+// })
+
 
 /**
  * 3. Fork your own sandbox, creating a new one named "JavaScript Axios Lab."
