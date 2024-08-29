@@ -288,6 +288,18 @@ const createFavourite = async (imgId) => {
  *    repeat yourself in this section.
  */
 
+const getFavouritesHandler = async () => {
+  Carousel.clear();
+  const favourites = await getFavourites();
+  console.log(favourites);
+  favourites.forEach((datum) => {
+    const carouselItem = Carousel.createCarouselItem(datum.image.url, 'alt placeholder', datum.image.id);
+    Carousel.appendCarousel(carouselItem);
+  })
+
+}
+getFavouritesBtn.addEventListener('click', getFavouritesHandler);
+
 /**
  * 10. Test your site, thoroughly!
  * - What happens when you try to load the Malayan breed?
