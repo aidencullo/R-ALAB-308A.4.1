@@ -194,6 +194,7 @@ axios.interceptors.response.use(
  * - In your request interceptor, set the body element's cursor style to "progress."
  * - In your response interceptor, remove the progress cursor style from the body element.
  */
+
 /**
  * 8. To practice posting data, we'll create a system to "favourite" certain images.
  * - The skeleton of this function has already been created for you.
@@ -206,7 +207,18 @@ axios.interceptors.response.use(
  * - You can call this function by clicking on the heart at the top right of any image.
  */
 export async function favourite(imgId) {
-  // your code here
+  const baseUrl = 'https://api.thecatapi.com/v1/favourites';
+  const headers = {
+    'Content-Type': 'application/json',
+    'x-api-key': API_KEY,
+  };
+  const options = {
+    headers: headers,  // Request headers
+    onDownloadProgress: updateProgress,
+    method: 'POST',
+  };
+  const response = await axios.get(baseUrl, options);
+  console.log('Favourite response', response);
 }
 
 /**
