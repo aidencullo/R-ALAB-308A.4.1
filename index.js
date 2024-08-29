@@ -241,8 +241,6 @@ const deleteFavourites = async () => {
   });
 }
 
-deleteFavourites();
-
 const deleteFavourite = async (favId) => {
   const baseUrl = 'https://api.thecatapi.com/v1/favourites';
   const url = `${baseUrl}/${favId}`;
@@ -290,14 +288,18 @@ const createFavourite = async (imgId) => {
 
 const getFavouritesHandler = async () => {
   Carousel.clear();
+  infoDump.innerHTML = '';
   const favourites = await getFavourites();
-  console.log(favourites);
+  if (favourites.length === 0) {
+    infoDump.innerHTML = 'No favourites found';
+    return;
+  }
   favourites.forEach((datum) => {
-    const carouselItem = Carousel.createCarouselItem(datum.image.url, 'alt placeholder', datum.image.id);
+    const carouselItem = Carousel.createCarouselItem(datum.image.url, '', datum.image.id);
     Carousel.appendCarousel(carouselItem);
   })
-
 }
+
 getFavouritesBtn.addEventListener('click', getFavouritesHandler);
 
 /**
