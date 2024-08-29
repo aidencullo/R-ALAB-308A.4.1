@@ -89,13 +89,36 @@ const handleBreedClick = async (e) => {
     Carousel.appendCarousel(carouselItem);
   })
 
-  infoDump.innerHtml = '';
-  const description = document.createElement('div');
-  description.textContent = data[0].breeds[0].description;
-  infoDump.appendChild(description);
-
+  createInfoDump(data);
 }
 
+const createInfoDump = (data) => {
+  infoDump.innerHTML = '';
+  const breedName = document.createElement('h2');
+  breedName.textContent = data[0].breeds[0].name;
+  infoDump.appendChild(breedName);
+
+  const breedOrigin = document.createElement('p');
+  breedOrigin.textContent = `Origin: ${data[0].breeds[0].origin}`;
+  infoDump.appendChild(breedOrigin);
+
+  const breedTemperament = document.createElement('p');
+  breedTemperament.textContent = `Temperament: ${data[0].breeds[0].temperament}`;
+  infoDump.appendChild(breedTemperament);
+
+  const breedLifeSpan = document.createElement('p');
+  breedLifeSpan.textContent = `Life Span: ${data[0].breeds[0].life_span}`;
+  infoDump.appendChild(breedLifeSpan);
+
+  const breedWeight = document.createElement('p');
+  breedWeight.textContent = `Weight: ${data[0].breeds[0].weight.metric} kg`;
+  infoDump.appendChild(breedWeight);
+
+  const breedImage = document.createElement('img');
+  breedImage.src = data[0].url;
+  breedImage.alt = 'placeholder';
+  infoDump.appendChild(breedImage);
+}
 
 const getBreedData = async () => {
   const baseUrl = 'https://api.thecatapi.com/v1/breeds';
