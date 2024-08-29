@@ -23,21 +23,17 @@ const API_KEY = "live_85IigfDFRAJz3RZl3AHEGeioejA1FeoZe5RpLo7Si7yYzbLATq0UWuocM3
  */
 
 const fetchWrapper = async (url, params = {}) => {
-  try {
-    const urlWithParams = `${url}?${params}`
-    const headers = {
-      'Content-Type': 'application/json',
-      'x-api-key': API_KEY,
-    };
-    const options = {
-      headers: headers,  // Request headers
-    };
-    const response = await fetch(urlWithParams, options);
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error:', error);
-  }
+  const urlWithParams = `${url}?${params}`
+  const headers = {
+    'Content-Type': 'application/json',
+    'x-api-key': API_KEY,
+  };
+  const options = {
+    headers: headers,  // Request headers
+  };
+  const response = await fetch(urlWithParams, options);
+  const data = await response.json();
+  return data;
 }
 
 const initialLoad = async () => {
@@ -49,6 +45,8 @@ const initialLoad = async () => {
   data.forEach((datum) => {
     createBreedOption(datum);
   })
+
+  handleBreedClick({target: breedSelect});
 }
 
 const createBreedOption = (datum) => {
