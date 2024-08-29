@@ -44,9 +44,7 @@ const httpRequest = async (url, params = {}) => {
 
 const initialLoad = async () => {
   const baseUrl = 'https://api.thecatapi.com/v1/breeds';
-  const params = new URLSearchParams({
-    limit: 2,
-  });
+  const params = new URLSearchParams({});
   const data = await httpRequest(baseUrl, params);
   data.forEach((datum) => {
     createBreedOption(datum);
@@ -80,10 +78,11 @@ initialLoad();
  */
 
 const handleBreedClick = async (e) => {
+  infoDump.innerHTML = '';
   const breed = e.target.value;
   const baseUrl = 'https://api.thecatapi.com/v1/images/search';
   const params = new URLSearchParams({
-    limit: 2,
+    limit: 10,
     breed_ids: breed,
   });
 
@@ -93,36 +92,47 @@ const handleBreedClick = async (e) => {
     const carouselItem = Carousel.createCarouselItem(datum.url, 'alt placeholder', datum.id);
     Carousel.appendCarousel(carouselItem);
   })
-
-  createInfoDump(data);
+  createInfoDump(breed);
 }
 
-const createInfoDump = (data) => {
+const createInfoDump = async (breed) => {
   infoDump.innerHTML = '';
+  const breedData = await getBreedDataOther(breed);
 
   const breedDescription = document.createElement('p');
-  breedDescription.textContent = data[0].breeds[0].description;
+  breedDescription.textContent = breedData.data.description;
   infoDump.appendChild(breedDescription);
   
   const breedName = document.createElement('h2');
-  breedName.textContent = data[0].breeds[0].name;
+  breedName.textContent = breedData.data.name;
   infoDump.appendChild(breedName);
 
   const breedOrigin = document.createElement('p');
-  breedOrigin.textContent = `Origin: ${data[0].breeds[0].origin}`;
+  breedOrigin.textContent = `Origin: ${breedData.data.origin}`;
   infoDump.appendChild(breedOrigin);
 
   const breedTemperament = document.createElement('p');
-  breedTemperament.textContent = `Temperament: ${data[0].breeds[0].temperament}`;
+  breedTemperament.textContent = `Temperament: ${breedData.data.temperament}`;
   infoDump.appendChild(breedTemperament);
 
   const breedLifeSpan = document.createElement('p');
-  breedLifeSpan.textContent = `Life Span: ${data[0].breeds[0].life_span}`;
+  breedLifeSpan.textContent = `Life Span: ${breedData.data.life_span}`;
   infoDump.appendChild(breedLifeSpan);
 
   const breedWeight = document.createElement('p');
-  breedWeight.textContent = `Weight: ${data[0].breeds[0].weight.metric} kg`;
+  breedWeight.textContent = `Weight: ${breedData.data.weight.metric} kg`;
   infoDump.appendChild(breedWeight);
+}
+
+const getBreedDataOther = async (breedId) => {
+  const baseUrl = `https://api.thecatapi.com/v1/breeds/${breedId}`;
+  return await axios.get(baseUrl, {
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': API_KEY,
+    },
+    onDownloadProgress: updateProgress,
+  });
 }
 
 const getBreedData = async () => {
@@ -156,7 +166,6 @@ breedSelect.addEventListener('change', handleBreedClick);
  */
 
 axios.interceptors.request.use(request => {
-  // console.log('Request started', request);
   progressBar.style.width = '0%';
   document.body.style.cursor = 'progress';
   return request;
@@ -164,7 +173,6 @@ axios.interceptors.request.use(request => {
 
 axios.interceptors.response.use(
   (response) => {
-    // console.log('Request ended', response);
     document.body.style.cursor = 'default';
     return response;
   },
