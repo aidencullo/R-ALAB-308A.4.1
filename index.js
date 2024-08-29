@@ -22,6 +22,11 @@ const API_KEY = "live_85IigfDFRAJz3RZl3AHEGeioejA1FeoZe5RpLo7Si7yYzbLATq0UWuocM3
  * This function should execute immediately.
  */
 
+const updateProgress = (progressEvent) => {
+  const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+  progressBar.style.width = `${percentCompleted}%`;
+}
+
 const fetchWrapper = async (url, params = {}) => {
   const urlWithParams = `${url}?${params}`
   const headers = {
@@ -30,6 +35,7 @@ const fetchWrapper = async (url, params = {}) => {
   };
   const options = {
     headers: headers,  // Request headers
+    onDownloadProgress: updateProgress,
   };
   const response = await axios.get(urlWithParams, options);
   const data = await response.data;
@@ -151,6 +157,7 @@ breedSelect.addEventListener('change', handleBreedClick);
 
 axios.interceptors.request.use(request => {
   console.log('Request started', request);
+  progressBar.style.width = '0%';
   return request;
 });
 
@@ -163,8 +170,6 @@ axios.interceptors.response.use(
     console.log('Request error', error);
     throw error;
   });
-
-
 
 /**
  * 6. Next, we'll create a progress bar to indicate the request is in progress.
