@@ -82,13 +82,29 @@ const handleBreedClick = async (e) => {
     limit: 2,
     breed_ids: breed,
   });
+
   const data = await fetchWrapper(baseUrl, params);
   data.forEach((datum) =>{
     console.log(datum)
     const carouselItem = Carousel.createCarouselItem(datum.url, 'alt placeholder', datum.id);
     Carousel.appendCarousel(carouselItem);
   })
+
+  const description = document.createElement('div');
+  description.textContent = data[0].breeds[0].description;
+  infoDump.appendChild(description);
+
 }
+
+
+const getBreedData = async () => {
+  const baseUrl = 'https://api.thecatapi.com/v1/breeds';
+  const params = new URLSearchParams({
+    limit: 2,
+  });
+  return await fetchWrapper(baseUrl, params);
+}
+
 
 breedSelect.addEventListener('change', handleBreedClick);
 
