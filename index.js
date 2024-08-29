@@ -156,7 +156,7 @@ breedSelect.addEventListener('change', handleBreedClick);
  */
 
 axios.interceptors.request.use(request => {
-  console.log('Request started', request);
+  // console.log('Request started', request);
   progressBar.style.width = '0%';
   document.body.style.cursor = 'progress';
   return request;
@@ -164,7 +164,7 @@ axios.interceptors.request.use(request => {
 
 axios.interceptors.response.use(
   (response) => {
-    console.log('Request ended', response);
+    // console.log('Request ended', response);
     document.body.style.cursor = 'default';
     return response;
   },
@@ -207,17 +207,67 @@ axios.interceptors.response.use(
  * - You can call this function by clicking on the heart at the top right of any image.
  */
 export async function favourite(imgId) {
+  const response = await getFavourites();
+  console.log('Favourites', response);
+  if (response.some((favourite) => favourite.image_id === imgId)) {
+    const favourite = response.find((favourite) => favourite.image_id === imgId);
+    await deleteFavourite(favourite.id);
+  }
+  else {
+    await postFavourite(imgId);
+  }
+  console.log('Favourited', await getFavourites());
+}
+
+
+const deleteFavourite = async (favId) => {
+  const headers = {
+    'Content-Type': 'application/json',
+    'x-api-key': API_KEY,
+  };
+
+  const requestOptions = {
+    method: 'DELETE',
+    headers
+  };
+
+  await fetch(`https://api.thecatapi.com/v1/favourites/${favId}`, requestOptions);
+}
+
+const getFavourites = async () => {
   const baseUrl = 'https://api.thecatapi.com/v1/favourites';
   const headers = {
     'Content-Type': 'application/json',
     'x-api-key': API_KEY,
   };
+
   const options = {
-    headers: headers,  // Request headers
+    headers: headers,
     onDownloadProgress: updateProgress,
-    method: 'POST',
   };
+
   const response = await axios.get(baseUrl, options);
+
+  return response.data;
+}
+
+const postFavourite = async (imgId) => {
+  const baseUrl = 'https://api.thecatapi.com/v1/favourites';
+  const headers = {
+    'Content-Type': 'application/json',
+    'x-api-key': API_KEY,
+  };
+
+  const data = {
+    image_id: imgId,
+  };
+
+  const options = {
+    headers: headers,
+    onDownloadProgress: updateProgress,
+  };
+
+  const response = await axios.post(baseUrl, data, options);
   console.log('Favourite response', response);
 }
 
