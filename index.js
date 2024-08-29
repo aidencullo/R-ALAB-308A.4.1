@@ -158,12 +158,14 @@ breedSelect.addEventListener('change', handleBreedClick);
 axios.interceptors.request.use(request => {
   console.log('Request started', request);
   progressBar.style.width = '0%';
+  document.body.style.cursor = 'progress';
   return request;
 });
 
 axios.interceptors.response.use(
   (response) => {
     console.log('Request ended', response);
+    document.body.style.cursor = 'default';
     return response;
   },
   (error) => {
