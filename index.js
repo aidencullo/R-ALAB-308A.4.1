@@ -42,14 +42,33 @@ const httpRequest = async (url, params = {}) => {
   return data;
 }
 
-const initialLoad = async () => {
-  const baseUrl = 'https://api.thecatapi.com/v1/breeds';
-  const params = new URLSearchParams({});
-  const data = await httpRequest(baseUrl, params);
-  data.forEach((datum) => {
-    createBreedOption(datum);
-  })
+const getFavourites = async () => {
+  return newHttpGet('https://api.thecatapi.com/v1/favourites');
+}
 
+const updateOptions = (headers) => {
+  return {
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': API_KEY,
+      ...headers,
+    },
+    onDownloadProgress: updateProgress,
+  };
+}
+
+const newHttpGet = async (url, headers = {}) => {
+  const options = updateOptions(headers);
+  const response = await axios.get(url, options);
+  return response.data;
+}
+
+const initialLoad = async () => {
+  const url = 'https://api.thecatapi.com/v1/breeds';
+  const breeds = await newHttpGet(url);
+  breeds.forEach((breed) => {
+    createBreedOption(breed);
+  })
   handleBreedClick({target: breedSelect});
 }
 
@@ -214,27 +233,6 @@ export async function favourite(imgId) {
   } else {
     await createFavourite(imgId);
   }
-}
-
-const getFavourites = async () => {
-  return newHttpGet('https://api.thecatapi.com/v1/favourites');
-}
-
-const updateOptions = (headers) => {
-  return {
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': API_KEY,
-      ...headers,
-    },
-    onDownloadProgress: updateProgress,
-  };
-}
-
-const newHttpGet = async (url, headers = {}) => {
-  const options = updateOptions(headers);
-  const response = await axios.get(url, options);
-  return response.data;
 }
 
 const deleteFavourites = async () => {
