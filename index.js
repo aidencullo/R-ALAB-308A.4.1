@@ -206,32 +206,15 @@ axios.interceptors.response.use(
  *   you delete that favourite using the API, giving this function "toggle" functionality.
  * - You can call this function by clicking on the heart at the top right of any image.
  */
+
 export async function favourite(imgId) {
-  const response = await getFavourites();
-  console.log('Favourites', response);
-  if (response.some((favourite) => favourite.image_id === imgId)) {
-    const favourite = response.find((favourite) => favourite.image_id === imgId);
-    await deleteFavourite(favourite.id);
-  }
-  else {
+  const favourites = await getFavourites();
+  const fav = favourites.find((favourite) => favourite.image_id === imgId);
+  if (fav) {
+    await deleteFavourite(fav.id);
+  } else {
     await postFavourite(imgId);
   }
-  console.log('Favourited', await getFavourites());
-}
-
-
-const deleteFavourite = async (favId) => {
-  const headers = {
-    'Content-Type': 'application/json',
-    'x-api-key': API_KEY,
-  };
-
-  const requestOptions = {
-    method: 'DELETE',
-    headers
-  };
-
-  await fetch(`https://api.thecatapi.com/v1/favourites/${favId}`, requestOptions);
 }
 
 const getFavourites = async () => {
@@ -247,8 +230,31 @@ const getFavourites = async () => {
   };
 
   const response = await axios.get(baseUrl, options);
-
   return response.data;
+}
+
+
+const deleteFavourites = async () => {
+  const favourites = await getFavourites();
+  favourites.forEach(async (favourite) => {
+    await deleteFavourite(favourite.id);
+  });
+}
+
+deleteFavourites();
+
+const deleteFavourite = async (favId) => {
+  const headers = {
+    'Content-Type': 'application/json',
+    'x-api-key': API_KEY,
+  };
+
+  const requestOptions = {
+    method: 'DELETE',
+    headers
+  };
+
+  await fetch(`https://api.thecatapi.com/v1/favourites/${favId}`, requestOptions);
 }
 
 const postFavourite = async (imgId) => {
@@ -268,7 +274,6 @@ const postFavourite = async (imgId) => {
   };
 
   const response = await axios.post(baseUrl, data, options);
-  console.log('Favourite response', response);
 }
 
 /**
