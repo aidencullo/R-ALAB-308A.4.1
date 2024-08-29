@@ -31,8 +31,8 @@ const fetchWrapper = async (url, params = {}) => {
   const options = {
     headers: headers,  // Request headers
   };
-  const response = await fetch(urlWithParams, options);
-  const data = await response.json();
+  const response = await axios.get(urlWithParams, options);
+  const data = await response.data;
   return data;
 }
 
