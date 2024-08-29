@@ -27,7 +27,7 @@ const updateProgress = (progressEvent) => {
   progressBar.style.width = `${percentCompleted}%`;
 }
 
-const fetchWrapper = async (url, params = {}) => {
+const httpRequest = async (url, params = {}) => {
   const urlWithParams = `${url}?${params}`
   const headers = {
     'Content-Type': 'application/json',
@@ -47,7 +47,7 @@ const initialLoad = async () => {
   const params = new URLSearchParams({
     limit: 2,
   });
-  const data = await fetchWrapper(baseUrl, params);
+  const data = await httpRequest(baseUrl, params);
   data.forEach((datum) => {
     createBreedOption(datum);
   })
@@ -88,7 +88,7 @@ const handleBreedClick = async (e) => {
   });
 
   Carousel.clear();
-  const data = await fetchWrapper(baseUrl, params);
+  const data = await httpRequest(baseUrl, params);
   data.forEach((datum) =>{
     const carouselItem = Carousel.createCarouselItem(datum.url, 'alt placeholder', datum.id);
     Carousel.appendCarousel(carouselItem);
@@ -130,7 +130,7 @@ const getBreedData = async () => {
   const params = new URLSearchParams({
     limit: 2,
   });
-  return await fetchWrapper(baseUrl, params);
+  return await httpRequest(baseUrl, params);
 }
 
 
@@ -213,7 +213,7 @@ export async function favourite(imgId) {
   if (fav) {
     await deleteFavourite(fav.id);
   } else {
-    await postFavourite(imgId);
+    await createFavourite(imgId);
   }
 }
 
@@ -244,6 +244,8 @@ const deleteFavourites = async () => {
 deleteFavourites();
 
 const deleteFavourite = async (favId) => {
+  const baseUrl = 'https://api.thecatapi.com/v1/favourites';
+  const url = `${baseUrl}/${favId}`;
   const headers = {
     'Content-Type': 'application/json',
     'x-api-key': API_KEY,
@@ -254,10 +256,10 @@ const deleteFavourite = async (favId) => {
     headers
   };
 
-  await fetch(`https://api.thecatapi.com/v1/favourites/${favId}`, requestOptions);
+  await axios.delete(url, requestOptions);
 }
 
-const postFavourite = async (imgId) => {
+const createFavourite = async (imgId) => {
   const baseUrl = 'https://api.thecatapi.com/v1/favourites';
   const headers = {
     'Content-Type': 'application/json',
