@@ -84,7 +84,6 @@ const handleBreedClick = async (e) => {
   Carousel.clear();
   const data = await fetchWrapper(baseUrl, params);
   data.forEach((datum) =>{
-    console.log(datum)
     const carouselItem = Carousel.createCarouselItem(datum.url, 'alt placeholder', datum.id);
     Carousel.appendCarousel(carouselItem);
   })
@@ -149,6 +148,23 @@ breedSelect.addEventListener('change', handleBreedClick);
  * - Add a console.log statement to indicate when requests begin.
  * - As an added challenge, try to do this on your own without referencing the lesson material.
  */
+
+axios.interceptors.request.use(request => {
+  console.log('Request started', request);
+  return request;
+});
+
+axios.interceptors.response.use(
+  (response) => {
+    console.log('Request ended', response);
+    return response;
+  },
+  (error) => {
+    console.log('Request error', error);
+    throw error;
+  });
+
+
 
 /**
  * 6. Next, we'll create a progress bar to indicate the request is in progress.
