@@ -72,10 +72,10 @@ const initialLoad = async () => {
   handleBreedClick({target: breedSelect});
 }
 
-const createBreedOption = (datum) => {
+const createBreedOption = (breed) => {
   const breedOption = document.createElement('option');
-  breedOption.value = datum.id;
-  breedOption.textContent = datum.name;
+  breedOption.value = breed.id;
+  breedOption.textContent = breed.name;
   breedSelect.appendChild(breedOption);
 }
 
@@ -114,33 +114,41 @@ const handleBreedClick = async (e) => {
   createInfoDump(breed);
 }
 
+const createTextElement = (tag, text) => {
+  const element = document.createElement(tag);
+  element.textContent = text;
+  return element;
+};
+
+const populateInfoDump = async (breedData) => {
+  const { data } = breedData;
+
+  if (data) {
+    // Use default values or placeholders for missing properties
+    const description = data.description || 'No description available.';
+    const name = data.name || 'No name provided.';
+    const origin = data.origin ? `Origin: ${data.origin}` : 'Origin: Not specified.';
+    const temperament = data.temperament ? `Temperament: ${data.temperament}` : 'Temperament: Not specified.';
+    const lifeSpan = data.life_span ? `Life Span: ${data.life_span}` : 'Life Span: Not specified.';
+    const weight = (data.weight && data.weight.metric) ? `Weight: ${data.weight.metric} kg` : 'Weight: Not specified.';
+
+    // Append elements with default values if properties are missing
+    infoDump.appendChild(createTextElement('p', description));
+    infoDump.appendChild(createTextElement('h2', name));
+    infoDump.appendChild(createTextElement('p', origin));
+    infoDump.appendChild(createTextElement('p', temperament));
+    infoDump.appendChild(createTextElement('p', lifeSpan));
+    infoDump.appendChild(createTextElement('p', weight));
+  } else {
+    // Handle the case where breedData.data is undefined or null
+    console.error('No breed data available.');
+  }
+};
+
 const createInfoDump = async (breed) => {
   infoDump.innerHTML = '';
   const breedData = await getBreedDataOther(breed);
-
-  const breedDescription = document.createElement('p');
-  breedDescription.textContent = breedData.data.description;
-  infoDump.appendChild(breedDescription);
-  
-  const breedName = document.createElement('h2');
-  breedName.textContent = breedData.data.name;
-  infoDump.appendChild(breedName);
-
-  const breedOrigin = document.createElement('p');
-  breedOrigin.textContent = `Origin: ${breedData.data.origin}`;
-  infoDump.appendChild(breedOrigin);
-
-  const breedTemperament = document.createElement('p');
-  breedTemperament.textContent = `Temperament: ${breedData.data.temperament}`;
-  infoDump.appendChild(breedTemperament);
-
-  const breedLifeSpan = document.createElement('p');
-  breedLifeSpan.textContent = `Life Span: ${breedData.data.life_span}`;
-  infoDump.appendChild(breedLifeSpan);
-
-  const breedWeight = document.createElement('p');
-  breedWeight.textContent = `Weight: ${breedData.data.weight.metric} kg`;
-  infoDump.appendChild(breedWeight);
+  await populateInfoDump(breedData);
 }
 
 const getBreedDataOther = async (breedId) => {
