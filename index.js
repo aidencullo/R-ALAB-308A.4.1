@@ -83,6 +83,7 @@ const handleBreedClick = async (e) => {
     breed_ids: breed,
   });
 
+  Carousel.clear();
   const data = await fetchWrapper(baseUrl, params);
   data.forEach((datum) =>{
     console.log(datum)
@@ -90,6 +91,7 @@ const handleBreedClick = async (e) => {
     Carousel.appendCarousel(carouselItem);
   })
 
+  infoDump.innerHtml = '';
   const description = document.createElement('div');
   description.textContent = data[0].breeds[0].description;
   infoDump.appendChild(description);
